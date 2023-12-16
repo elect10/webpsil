@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>friend</title>
+    <link rel="stylesheet" href="/static/friend.css">
+    
+
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <img src="/static/friendpic.png" id="frpic" >
+            <button class = "chat">
+                
+            </button>
+
+            <button class = "login">
+                logout
+            </button>
+            
+
+          
+
+        </div>
+        <div class="friendbox">
+            {% for friend in friends %}
+                <button class="friendlist">
+                    {{ friend }}
+                </button>
+                <br>
+            {% endfor %}
+            <div>
+                <button class="addfriend">
+                    add friend
+                </button>
+            </div>
+        </div>
+
+        
+    </div>
+    
+    <div id="popup" class="popup" style="display : none;" >
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <form id="addfriendForm" action="/addfriend" method="post">
+                <input type="text" name="friendname" id="friendname" placeholder="enter friends id"><br>
+                <button type="submit" id="sub">enter</button>
+        </div>
+    </div>
+
+<script src="/static/friend.js"></script>
+    
+</body>
+</html>

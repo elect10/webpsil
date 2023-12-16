@@ -1,0 +1,45 @@
+body {
+    
+    background-color: rgb(173, 194, 216);
+}
+.loginbox{
+    padding: 20px;
+    width: 330px;
+    height:550px;
+    background-color:rgb(255,228,0);
+    display: flex;
+    justify-content: center;
+    border-radius: 11.5px;
+
+}
+#name{
+    font-size: 20px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    margin-top: 100px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+#username{
+    
+    
+    width: 200px;
+    height: 35px;
+    
+    
+}
+
+#password{
+    width: 200px;
+    height: 35px;
+    margin-bottom: 10px;
+}
+#sub{
+    width: 205px;
+    height: 50px;
+    box-shadow: none;
+    
+}
+input::placeholder{
+    color:black;
+    text-align: center;
+}

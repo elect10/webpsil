@@ -1,0 +1,61 @@
+body {
+    
+    background-color: rgb(173, 194, 216);
+}
+
+.container{
+    
+   
+    width: 330px;
+    height:550px;
+    background-color:rgb(255,228,0);
+    
+    border-radius: 11.5px;
+
+}
+
+.nav{
+    float: left;
+    width: 75px;
+    height:550px;
+    background-color: rgb(230, 230, 230);
+    border-bottom-left-radius:11.5px;
+    border-top-left-radius:11.5px ;
+
+}
+#chpic{
+    margin-top: 8px;
+}
+
+.login{
+    font-size: large;
+    font-weight: 400;
+    position: absolute;
+    top:500px;
+    width:70px;
+    height:50px;
+    background-color: rgba(0,0,0,0);
+    border: none;
+    outline:none;
+}
+
+.chatbox{
+    float: left;
+    width:255px;
+    height:550px;
+    background-color: white;
+    border-bottom-right-radius: 11.5px;
+    border-top-right-radius:11.5px ;
+
+}
+
+.friend{
+    position: absolute;
+    top:25px;
+    width:70px;
+    height:50px;
+    background-color: rgba(0,0,0,0);
+    border:none;
+    outline:none;
+}
+

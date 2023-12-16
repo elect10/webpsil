@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="/static/login.js"></script>
+    <link rel="stylesheet" href="/static/login.css">
+</head>
+<body>
+    <div class="loginbox">
+        <!-- action과 method 속성 추가 -->
+        <form id="loginForm" action="/users" method="post">
+            <div id="name"> skku talk </div>
+            <!-- name 속성 추가 -->
+            <input type="text" name="username" id="username" placeholder="id"><br>
+            <input type="password" name="password" id="password" placeholder="Password"><br>
+            <button type="submit" id="sub">Login</button>
+        </form>
+    </div>
+    
+    
+</body>
+</html>

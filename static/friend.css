@@ -1,0 +1,108 @@
+body {
+    
+    background-color: rgb(173, 194, 216);
+}
+
+.container{
+    
+   
+    width: 330px;
+    height:550px;
+    background-color:rgb(255,228,0);
+    
+    border-radius: 11.5px;
+
+}
+
+.nav{
+    float: left;
+    width: 75px;
+    height:550px;
+    background-color: rgb(230, 230, 230);
+    border-bottom-left-radius:11.5px;
+    border-top-left-radius:11.5px ;
+
+}
+#frpic{
+    margin-top: 8px;
+}
+.chat{
+    position: absolute;
+    top:80px;
+    width:70px;
+    height:50px;
+    background-color: rgba(0,0,0,0);
+    border:none;
+    outline:none;
+}
+
+.login{
+    font-size: large;
+    font-weight: 400;
+    position: absolute;
+    top:500px;
+    width:70px;
+    height:50px;
+    background-color: rgba(0,0,0,0);
+    border: none;
+    outline:none;
+}
+
+.addfriend{
+    font-size: 16px;
+    font-weight: 300;
+    position: absolute;
+    top:500px;
+    left:250px;
+    width:70px;
+    height:50px;
+    background-color: rgba(0,0,0,0);
+    border:none;
+    outline:none;
+}
+
+.popup{
+    position: absolute;
+    top:283px;
+    left: 172px;
+   
+    transform: translate(-50%,-50%);
+    width: 290px;
+    height:510px;
+    background-color: white;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+    z-index: 2;
+    display: none;
+}
+
+.friendbox{
+    float: left;
+    width:255px;
+    height:550px;
+    background-color: white;
+    border-bottom-right-radius: 11.5px;
+    border-top-right-radius:11.5px ;
+
+}
+
+.friendlist{
+    padding-left: 19px;
+    padding-top: 10px;
+    font-size: 16px;
+    text-align: left;
+    margin-top: 3px;
+    border:none;
+    outline:none;
+    box-shadow: none;
+    background-color: white;
+    width: 250px;
+    height:50px;
+    
+}
+

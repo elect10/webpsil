@@ -5,27 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>대화 페이지</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/function.js"></script>
+    
 </head>
 <body>
-
-    <!-- <form id="login-form">
-        <input type="text" id="user-id" placeholder="Enter your ID" required>
-        <button type="submit">Enter</button>
-    </form> -->
-
-
 
     <div class="chat-container" id ="chat-container1">
         
         <div class="chat-box" id="chat-box1" >
+            
             <textarea id="message-input" ></textarea>
+            <input type="file" id="file-input" accept="image/*,video/*">
         </div>
 
         <button class="send-button" id="send-button1">
         Send
         </button>
     </div>
-       
+
+    <button class="exit">
+        나가기
+    </button>
+
+    <script src="/static/function.js"></script>
 </body>
 </html>

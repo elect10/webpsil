@@ -9,6 +9,7 @@ import sqlite3
 from datetime import datetime
 from typing import List
 from starlette.middleware.sessions import SessionMiddleware
+from flask import jsonify
 
 
 
@@ -67,7 +68,7 @@ class Message(BaseModel):
     user_id: str
     content: str
     timestamp: datetime
-    message_type: str  # 'user' 또는 'opp'
+    friend_id: str  
 
 
 
@@ -75,7 +76,7 @@ class Message(BaseModel):
 def get_db_connection():
     conn = sqlite3.connect('chat.db')
     conn.execute('''CREATE TABLE IF NOT EXISTS messages
-             (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, content TEXT, timestamp TEXT, message_type TEXT)''')
+             (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, content TEXT, timestamp TEXT, friend_id TEXT)''')
 
     return conn
 
@@ -107,14 +108,24 @@ async def login_post(request: Request, username: str = Form(...), password: str 
         
         
         request.session["username"] = username
+        
 
         return RedirectResponse(url="/friend", status_code=status.HTTP_302_FOUND)
     except Exception as e:
         print("Error:", e)  # 오류 출력
     finally:
-        
+            
         
         conn.close()
+
+def get_last_message(conn, user_id, friend_id):
+    last_message = conn.execute('''
+        SELECT * FROM messages
+        WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)
+        ORDER BY timestamp DESC
+        LIMIT 1
+    ''', (user_id, friend_id, friend_id, user_id)).fetchone()
+    return last_message[2] if last_message else None
 
 @app.get("/friend")
 async def friend(request: Request):
@@ -123,16 +134,17 @@ async def friend(request: Request):
         print("No username in session")  # 디버깅 메시지
         return
     conn = getuser_db_connection()
+    
     try:
         current_user = conn.execute('SELECT * FROM users WHERE username = ?', (current_username,)).fetchone()
         friends = list(set(current_user['friends'].split(','))) if current_user['friends'] else []
+      
+        
     finally:
         conn.close()
     return templates.TemplateResponse("friend.html", {"request": request, "friends": friends})
 
-@app.get("/chatroom")
-async def chat(request: Request):
-    return templates.TemplateResponse("chatroom.html", {"request": request})
+
 
 
 @app.get("/index")
@@ -141,16 +153,63 @@ async def index(request: Request):
 
 # 메시지 저장 API
 
+
+@app.get("/chatroom")
+async def friend(request: Request):
+    current_username = request.session.get("username")
+    if current_username is None:
+        print("No username in session")  # 디버깅 메시지
+        return
+    conn = getuser_db_connection()
+    temp = get_db_connection()
+    try:
+        current_user = conn.execute('SELECT * FROM users WHERE username = ?', (current_username,)).fetchone()
+        friends = list(set(current_user['friends'].split(','))) if current_user['friends'] else []
+        friends_with_last_message = []
+        for friend in friends:
+            last_message = get_last_message(temp, current_username, friend)
+            if last_message is not None:  # 채팅 내용이 None이 아닌 경우에만 추가
+                friends_with_last_message.append((friend, last_message))
+    finally:
+        conn.close()
+    return templates.TemplateResponse("chatroom.html", {"request": request, "friends": friends_with_last_message})
+
+@app.get("/set_friend_id")
+async def set_friend_id(request: Request):
+    friendId = request.query_params.get('friendId')
+    if friendId is None:
+        raise HTTPException(status_code=400, detail="friendId is required")
+
+    request.session['friendId'] = friendId  
+    return {"message": "Friend ID received successfully"}
+
+
+@app.get("/get_ids")
+def get_ids(request: Request):
+    userId = request.session.get('username')
+    friendId = request.session.get('friendId')
+
+    print("userId from session: ", userId) 
+    print("friendId from session: ", friendId)
+
+    return {
+        "userId": userId,
+        "friendId": friendId
+    }
+
+
 @app.post("/messages/")
-async def create_message(message: Message):
+async def create_message(request: Request, message: Message):
+    current_username = request.session.get("username")
+    current_friendId = request.session.get("friendId")
     conn = get_db_connection()
     cursor = conn.cursor()
     # message_type 필드를 INSERT 쿼리에 추가
-    cursor.execute("INSERT INTO messages (user_id, content, timestamp, message_type) VALUES (?, ?, ?, ?)",
-                   (message.user_id, message.content, str(message.timestamp), message.message_type))
+    cursor.execute("INSERT INTO messages (user_id, content, timestamp, friend_id) VALUES (?, ?, ?, ?)",
+                   (current_username, message.content, str(message.timestamp), current_friendId))
     conn.commit()
     conn.close()
-    return {"message": "Message saved successfully"}
+    return {"message": "Message saved successfully" }
 
 
 # 특정 사용자의 메시지 검색 API

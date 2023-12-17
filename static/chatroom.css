@@ -4,7 +4,7 @@ body {
 }
 
 .container{
-    
+       
    
     width: 330px;
     height:550px;
@@ -59,3 +59,25 @@ body {
     outline:none;
 }
 
+
+
+.friendlist{
+    padding-left: 19px;
+    padding-top: 10px;
+    font-size: 16px;
+    text-align: left;
+    margin-top: 3px;
+    border:none;
+    outline:none;
+    box-shadow: none;
+    background-color: white;
+    width: 250px;
+    height:50px;
+    
+}
+
+.last{
+    padding-left: 19px;
+    font-size: 10px;
+    text-align: left;
+}

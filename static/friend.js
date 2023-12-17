@@ -16,12 +16,20 @@ document.querySelector('.addfriend').addEventListener('click', function(event) {
 document.querySelectorAll('.friendlist').forEach(function(button) {
     button.addEventListener('click', function(event) {
         event.preventDefault();
-        let friendUserId = event.target.value; // 친구의 ID를 가져옵니다.
-        sessionStorage.setItem('friendUserId', friendUserId); // 세션 스토리지에 친구의 ID를 저장합니다.
-        window.location.href = '/index';
+        let friendUserId = event.target.innerText.trim(); 
+
+        // friendUserId를 쿼리 파라미터로 추가
+        let url = new URL('/set_friend_id', window.location.origin);
+        url.searchParams.append('friendId', friendUserId);
+
+        fetch(url, {
+            method: 'GET',
+        }).then(response => response.json())
+          .then(data => console.log(data.message))
+          .catch(error => console.error('에러:', error));
+          window.location.href = '/index';
     });
 });
-        
 
 
 function openPopup() {

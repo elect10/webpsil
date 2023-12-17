@@ -14,21 +14,17 @@
             <button class = "login">
                 logout
             </button>
-            
-            
-          
-
         </div>
-        <script src="/static/chatroom.js"></script>
-
-        <div class ="chatbox" >
-            
-            
+        <div class="chatbox">
+            {% for friend, last_message in friends %}
+                <button class="friendlist">
+                    {{ friend }}
+                </button>
+                <div class="last">{{ last_message }}</div>
+                <br>
+            {% endfor %}
         </div>
-
     </div>
-    
-
-    
+    <script src="/static/chatroom.js"></script>
 </body>
 </html>

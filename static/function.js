@@ -1,64 +1,21 @@
-// document.addEventListener('DOMContentLoaded', function() {
-//     const loginForm = document.getElementById('login-form');
-//     const userIdInput = document.getElementById('user-id');
-
-//     loginForm.addEventListener('submit', function(event) {
-//         event.preventDefault(); 
-//         currentUserId = userIdInput.value.trim(); 
-//         loadMessages(currentUserId); 
-//     });
-   
-// });
-
-
-
-
-
 
 document.addEventListener('DOMContentLoaded', function() {
-    let currentUserId = sessionStorage.getItem('currentUserId');
-    let friendUserId = sessionStorage.getItem('friendUserId');
+    
 
-    loadMessages(currentUserId, friendUserId);
+    loadMessages();
 
+    let messageInput = document.getElementById('message-input');
+    let sendButton = document.querySelector('.chat-container .send-button'); 
 
-    let messageInput1 = document.getElementById('message-input');
-    let sendButton1 = document.querySelector('.chat-container .send-button'); 
-
-    loadMessages(currentUserId, friendUserId);
-    let messageInput2 = document.getElementById('message-input2');
-    let sendButton2 = document.querySelectorAll('.chat-container .send-button')[1];
-
-    messageInput1.addEventListener('keyup', function(event) {
-        
-        if (event.key === 'Enter' && event.shiftKey) {
-       
-            
-           
-        }
-        else if (event.key === 'Enter') {
+    messageInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-            sendButton1.click();}
-        });
-
-    sendButton1.addEventListener('click', function() {
-        sendMessage(messageInput1.value, 1);
-    });
-
-    messageInput2.addEventListener('keyup', function(event) {
-        
-        if (event.key === 'Enter' && event.shiftKey) {
-        
-        
-        }
-        else if (event.key === 'Enter') {
-         event.preventDefault();
-         sendButton2.click();
+            sendButton.click();
         }
     });
 
-    sendButton2.addEventListener('click', function() {
-        sendMessage(messageInput2.value, 2);
+    sendButton.addEventListener('click', function() {
+        sendMessage(messageInput.value);
     });
 });
 
@@ -70,13 +27,30 @@ socket.onopen = function(e) {
 };
 
 socket.onmessage = function(event) {
-   
-    const data = JSON.parse(event.data);
-    if(data.user_id === currentUserId) {
+    console.log("Received message: ", event.data);  // 로그 추가
+
+
+
+    fetch('/get_ids')
+    .then(response => response.json())
+    .then(iddata => {
+        
+
+        let userId = iddata.userId;
+        let friendId = iddata.friendId;
+
+        console.log("userId: ", userId);
+        console.log("friendId: ", friendId);
+
+        const data = JSON.parse(event.data);
+    if(data.user_id === userId) {
         addUserMessage(document.getElementById('chat-container1'), data.content);
-    } else {
-        addOppMessage(document.getElementById('chat-container1'), data.content, data.user_id);
+    } else if(data.user_id === friendId) {
+        addOppMessage(document.getElementById('chat-container1'), data.content, friendId);
     }
+        
+    });
+    
 };
 
 socket.onclose = function(event) {
@@ -92,9 +66,7 @@ socket.onerror = function(error) {
     console.error(`[error] ${error.message}`);
 };
 
-
-
-async function sendToServer(message, userId, messageType) {
+async function sendToServer(message, userId, friendId) {
     try {
         await fetch('/messages/', {
             method: 'POST',
@@ -105,7 +77,7 @@ async function sendToServer(message, userId, messageType) {
                 user_id: userId,
                 content: message,
                 timestamp: new Date(),
-                message_type: messageType
+                friend_id: friendId
             })
         });
     } catch (error) {
@@ -113,61 +85,73 @@ async function sendToServer(message, userId, messageType) {
     }
 }
 
+async function loadMessages() {
 
 
-async function loadMessages(currentUserId, friendUserId) {
+
+
+
     try {
         const response = await fetch(`/messages/`);
         const data = await response.json();
-        if (data.messages) {
-            clearMessages(); 
-            data.messages.forEach(message => {
-                const userContainer = document.getElementById('chat-container1');
-                
-                if(message[1] === currentUserId && message[3] === friendUserId) {
-                    addUserMessage(userContainer, message[2]);
-                } else if(message[1] === friendUserId && message[3] === currentUserId) {
-                    addOppMessage(userContainer, message[2], message[1]);
-                }
-            });
-        }
+        fetch('/get_ids')
+        .then(response => response.json())
+        .then(iddata => {
+        
+
+            let userId = iddata.userId;
+            let friendId = iddata.friendId;
+            if (data.messages) {
+                clearMessages(); 
+                data.messages.forEach(message => {
+                    const userContainer = document.getElementById('chat-container1');
+                    
+                    if(message[1] === userId && message[4] === friendId) {
+                        addUserMessage(userContainer, message[2]);
+                    } else if(message[1] === friendId && message[4] === userId) {
+                        addOppMessage(userContainer, message[2], friendId);
+                    }
+                });
+            }
+        
+        });
+        
     } catch (error) {
         console.error('Error loading messages:', error);
     }
 }
 
+function sendMessage(message) {   
+    fetch('/get_ids')
+    .then(response => response.json())
+    .then(data => {
+        
 
+        let userId = data.userId;
+        let friendId = data.friendId;
 
-
-
-function sendMessage(message, inputNumber) {    
-    let userId = document.getElementById('user-id').value;
-    let messageType = inputNumber === 1 ? 'user' : 'opp'; 
-    sendToServer(message, userId, messageType);
-    message = message.trim();
-    if(message !== "") {
-        let userContainer = document.querySelectorAll('.chat-container')[inputNumber - 1]; // 보낸 메시지를 추가할 컨테이너
-        let oppContainer = document.querySelectorAll('.chat-container')[inputNumber % 2]; // 받은 메시지를 추가할 컨테이너
-
-        // 보낸 메시지 처리
-        //addUserMessage(userContainer, message);
-
-        // 받은 메시지 처리
-        //addOppMessage(oppContainer, message, userId);
+        console.log("userId: ", userId);
+        console.log("friendId: ", friendId);
+        
+        sendToServer(message, userId, friendId);
+        message = message.trim();
+        if(message !== "") {
+            document.getElementById('message-input').value = '';
+        }
+        let messageData = JSON.stringify({
+            user_id: userId,
+            content: message,
+            timestamp: new Date(),
+            friend_id: friendId
+        });
 
         
-        document.getElementById(inputNumber === 1 ? 'message-input' : 'message-input2').value = '';
-    }
-    let data = JSON.stringify({
-        user_id: currentUserId,
-        content: message,
-        timestamp: new Date(),
-        message_type: messageType
+
+        socket.send(messageData);
     });
-
-    socket.send(data);
-
 }
+
+
 
 function addUserMessage(container, message) {
     
@@ -206,7 +190,6 @@ function clearMessages() {
     });
 }
 
-
 function addOppMessage(container, message, userid) {
 
     
@@ -239,3 +222,9 @@ function addOppMessage(container, message, userid) {
 newMessageDiv.scrollIntoView({ behavior: 'smooth' });
 
 }
+
+
+document.querySelector('.exit').addEventListener('click', function(event) {
+    event.preventDefault();
+    window.location.href = '/chatroom';
+});
